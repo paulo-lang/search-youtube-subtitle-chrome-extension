@@ -40,5 +40,6 @@
 }
 
 ul {
+    padding-inline-start: 15px;
     margin-top: 10px;
 }
