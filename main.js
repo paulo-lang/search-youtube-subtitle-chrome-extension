@@ -47,8 +47,6 @@ const mapSubtitleLocation = (searchResult) => {
     searchResult.forEach((element) => {
         const subtitleUrl = url + '&t=' + element + 's';
 
-        
-
         const stringifiedHour = stringifyHour(element);
 
         const linkElement = document.createElement('a');
