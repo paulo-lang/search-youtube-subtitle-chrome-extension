@@ -15,6 +15,7 @@
     "permissions": [
         "webRequest",
         "webRequestBlocking",
-        "*://*.youtube.com/api/timedtext*"
+        "*://*.youtube.com/api/timedtext*",
+        "tabs"
     ]
 }
