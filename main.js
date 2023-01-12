@@ -3,13 +3,19 @@ document.addEventListener('DOMContentLoaded', function() {
     buttonSearch.addEventListener('click', getPageInfo);
 })
 
+let subtitles = null;
+
 const getPageInfo = () => {
-    const backgroundPageInfo = chrome.extension.getBackgroundPage();
+    const searchText = document.getElementById("searchText").value;
+    document.getElementById("alert").style.display = "none";
+
+    if(!subtitles) {
+        document.getElementById("alert").style.display = "block";
+    }
+
 }
 
 const filter = { urls: [ "*://*.youtube.com/api/timedtext*" ] };
-
-let subtitles = {};
 
 chrome.webRequest.onBeforeRequest.addListener(
     (details) => { if (details.initiator == 'https://www.youtube.com') return onBeforeRequest(details) }, 
@@ -26,7 +32,7 @@ const onBeforeRequest = (details) => {
             },  
         })
         .then(response => response.json())
-        .then(data => subtitles = data)
+        .then(data => subtitles = {})
     }
 }
 
