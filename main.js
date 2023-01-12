@@ -3,22 +3,34 @@ document.addEventListener('DOMContentLoaded', function() {
     buttonSearch.addEventListener('click', getPageInfo);
 })
 
-const filter = { urls: [ "<all_urls>" ] };
+const getPageInfo = () => {
+    const backgroundPageInfo = chrome.extension.getBackgroundPage();
+}
+
+const filter = { urls: [ "*://*.youtube.com/api/timedtext*" ] };
+
+let subtitles = {};
 
 chrome.webRequest.onBeforeRequest.addListener(
-    (details) => {return onBeforeRequest(details)}, 
-    filter,
-    ["requestBody","blocking"]
+    (details) => { if (details.initiator == 'https://www.youtube.com') return onBeforeRequest(details) }, 
+    filter
 );
 
 const onBeforeRequest = (details) => {
-    if(details.url.includes("timedtext")){
-        console.log(details);
+
+    if(details.url.includes("timedtext")) {
+        fetch(details.url, {
+            method: 'GET',
+            headers: {
+                'Accept': '*/*',
+            },  
+        })
+        .then(response => response.json())
+        .then(data => subtitles = data)
     }
 }
 
-const getPageInfo = () => {
-    const backgroundPageInfo = chrome.extension.getBackgroundPage();
-    console.log(chrome.extension.network);
-    console.log("oi");
+const handleSubtitles = (subtitle) => {
+    console.log(subtitle);
 }
+
