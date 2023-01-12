@@ -11,32 +11,27 @@ const getPageInfo = () => {
 
     if(!subtitles) {
         document.getElementById("alert").style.display = "block";
+        return;
     }
 
+    searchSubtitles(searchText);
+}
+
+const searchSubtitles = (searchText) => {
+    console.log(subtitles);
 }
 
 const filter = { urls: [ "*://*.youtube.com/api/timedtext*" ] };
 
 chrome.webRequest.onBeforeRequest.addListener(
-    (details) => { if (details.initiator == 'https://www.youtube.com') return onBeforeRequest(details) }, 
+    (details) => { if (details.initiator == 'https://www.youtube.com') onBeforeRequest(details) }, 
     filter
 );
 
-const onBeforeRequest = (details) => {
-
+const onBeforeRequest = async (details) => {
     if(details.url.includes("timedtext")) {
-        fetch(details.url, {
-            method: 'GET',
-            headers: {
-                'Accept': '*/*',
-            },  
-        })
-        .then(response => response.json())
-        .then(data => subtitles = {})
+        const res = await fetch(details.url);
+        subtitles = await res.json();
     }
-}
-
-const handleSubtitles = (subtitle) => {
-    console.log(subtitle);
 }
 
