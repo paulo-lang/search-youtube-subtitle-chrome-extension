@@ -1,0 +1,20 @@
+{
+    "manifest_version": 2,
+    "version": "0.0.0",
+    "name": "Find On Video",
+    "description": "This extension helps finding a specifically part of a youtube video by searching a key on it's subtitles",
+    "author": "Paulo José dos Santos",
+    "browser_action": {
+        "default_title": "Find On Video",
+        "default_popup": "index.html"
+    },
+    "background": {
+        "scripts": ["main.js"],
+        "persistent" : true
+    },
+    "permissions": [
+        "webRequest",
+        "webRequestBlocking",
+        "*://*.youtube.com/api/timedtext*"
+    ]
+}
