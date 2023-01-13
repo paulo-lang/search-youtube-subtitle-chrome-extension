@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "version": "0.0.0",
+    "version": "1.0.0",
     "name": "Find On Video",
     "description": "This extension helps finding a specifically part of a youtube video by searching a key on it's subtitles",
     "author": "Paulo José dos Santos",
