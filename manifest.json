@@ -9,13 +9,13 @@
         "default_popup": "index.html"
     },
     "background": {
-        "scripts": ["main.js"],
+        "scripts": ["background.js"],
         "persistent" : true
     },
     "permissions": [
         "webRequest",
-        "webRequestBlocking",
         "*://*.youtube.com/api/timedtext*",
-        "tabs"
+        "tabs",
+        "storage"
     ]
 }

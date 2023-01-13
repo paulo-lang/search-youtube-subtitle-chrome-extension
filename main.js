@@ -1,37 +1,45 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const buttonSearch = document.getElementById("searchButton");
-    buttonSearch.addEventListener('click', getPageInfo);
-})
+    buttonSearch.addEventListener('click', getSubtitlesThenSearch);
+});
 
 let subtitles = null;
-let url = null;
 
-const getPageInfo = () => {
-    const searchText = document.getElementById("searchText").value;
+const getSubtitlesThenSearch = async () => {
+    chrome.storage.local.get("subtitles", (result) => loadedSubtitles(result));
+}
+
+const loadedSubtitles = (result) => {
+    subtitles = result.subtitles;
+
     document.getElementById("resultList").innerHTML = '';
     document.getElementById("nullResult").style.display = "none";
     document.getElementById("subtitleNull").style.display = "none";
     document.getElementById("listTitle").style.display = "none";
 
-    if(!subtitles) {
+    if (!subtitles) {
         document.getElementById("subtitleNull").style.display = "block";
         return;
     }
 
-    searchSubtitles(searchText);
+    searchSubtitles(searchText.value);
 }
 
 const searchSubtitles = (searchText) => {
     const searchResult = [];
 
     subtitles.forEach((element) => {
-        if(element.segs[0].utf8.includes(searchText)) {
-            const msInSecs = Math.trunc(element.tStartMs/1000);
-            searchResult.push(msInSecs);
+        if(element.segs) {
+            element.segs.forEach((moment) => {
+                if(moment.utf8.includes(searchText)) {
+                    const time = moment.tOffsetMs ? element.tStartMs + moment.tOffsetMs : element.tStartMs;
+                    searchResult.push(Math.trunc(time / 1000));
+                }
+            })
         }
-    })
+    });
 
-    if(searchResult.length == 0) {
+    if (searchResult.length == 0) {
         document.getElementById("nullResult").style.display = "block";
         return;
     }
@@ -41,9 +49,11 @@ const searchSubtitles = (searchText) => {
     mapSubtitleLocation(searchResult);
 }
 
-const mapSubtitleLocation = (searchResult) => {
-    const resultList = document.getElementById('resultList');
+const mapSubtitleLocation = async (searchResult) => {
+    await chrome.storage.local.get("url", (result) => onURLLoaded(result.url, searchResult));
+}
 
+const onURLLoaded = (url, searchResult) => {
     searchResult.forEach((element) => {
         const subtitleUrl = url + '&t=' + element + 's';
 
@@ -52,18 +62,17 @@ const mapSubtitleLocation = (searchResult) => {
         const linkElement = document.createElement('a');
         linkElement.href = subtitleUrl;
         linkElement.innerHTML = stringifiedHour;
-        linkElement.className = "link"; 
+        linkElement.className = "link";
         linkElement.style.display = "block";
         linkElement.addEventListener('click', openLink);
         resultList.appendChild(linkElement);
-
-    })
+    });
 }
 
 const openLink = (evt) => {
     let evtURL = evt.currentTarget.href;
 
-    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         var tab = tabs[0];
         chrome.tabs.update(tab.id, { url: evtURL });
     });
@@ -71,50 +80,27 @@ const openLink = (evt) => {
 
 const stringifyHour = (element) => {
     let h = null;
-    let min = Math.floor(element/60);
-    if(min >= 60) {
+    let min = Math.floor(element / 60);
+    if (min >= 60) {
         min %= 60;
-        h = min/60;
+        h = min / 60;
     }
     const sec = Math.floor((element) % 60);
 
     let hourStringified = '';
     let secStringified = '';
 
-    if(sec < 10) {
+    if (sec < 10) {
         secStringified = '0' + sec;
-    }else {
+    } else {
         secStringified = sec;
     }
 
-    if( h > 0 ) {
+    if (h > 0) {
         hourStringified = h + ':' + min + ':' + secStringified;
-    }else {
+    } else {
         hourStringified = min + ':' + secStringified;
     }
-    
+
     return hourStringified;
 }
-
-chrome.tabs.query({
-    active: true,
-    currentWindow: true
-  }, function(tabs) {
-    let tab = tabs[0];
-    url = tab.url.replace(/&t.*$/, "");
-});
-
-const filter = { urls: [ "*://*.youtube.com/api/timedtext*" ] };
-
-chrome.webRequest.onBeforeRequest.addListener(
-    (details) => { if (details.initiator == 'https://www.youtube.com') onBeforeRequest(details) }, 
-    filter
-);
-
-const onBeforeRequest = async (details) => {
-    if(details.url.includes("timedtext")) {
-        const res = await (await fetch(details.url)).json();
-        subtitles = res.events;
-    }
-}
-
