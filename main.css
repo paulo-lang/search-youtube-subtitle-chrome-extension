@@ -7,9 +7,11 @@
 #MainContainer {
     padding: 25px;
     display: flex;
-    width: 220px;
+    width: 250px;
     justify-content: center;
+    align-items: center;
     flex-direction: column;
+    background-color: rgb(50, 50, 50);
 }
 
 .text {
@@ -17,12 +19,19 @@
 }
 
 #title {
-    font-size: 15px;
+    font-size: 25px;
+    color:rgb(222, 12, 12);
+    text-align: center;
+    letter-spacing: 2px;
 }
 
 #desc {
     font-size: 12px;
     margin-top: 20px;
+    color: rgb(161, 161, 161);
+    text-align: center;
+    padding-left: 9px;
+    padding-right: 9px;
 }
 
 .alert {
@@ -33,13 +42,44 @@
     margin-top: 20px;
     font-weight: bold;
     display: none;
+    align-self: flex-start;
+    color:rgb(222, 12, 12);
+    letter-spacing: 2px;
 }
 
 #searchText {
-    margin-top: 15px;
+    margin-top: 25px;
+    background-color: rgb(204, 204, 204);
+    color:rgba(185, 0, 0, 0.377);
+    border: 0;
+    height: 30px;
+    border-radius: 5px;
+    padding: 5px 20px;
+    box-shadow: 2px 3px 3px black;
+}
+
+#searchText:focus {
+    color:rgb(222, 12, 12);
 }
 
 ul {
     padding-inline-start: 15px;
     margin-top: 10px;
+    align-self: flex-start;
+}
+
+a {
+    color: rgba(222, 12, 12, 0.529);
+    margin-top: 10px;
+}
+
+#searchButton {
+    margin-top: 15px;
+    background-color: rgb(28, 26, 26);
+    border-radius: 5px;
+    height: 35px;
+    width: 100px;
+    border-color: rgb(222, 12, 12);
+    border-width: 0.1px;
+    color: rgb(222, 12, 12);;
 }
